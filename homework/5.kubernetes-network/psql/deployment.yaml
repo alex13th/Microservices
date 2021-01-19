@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psqldb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psqldb-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: psqldb-app
+    spec:
+      containers:
+      - image: postgres:10.13
+        name: psql-app
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: psqldb-configmap
+              key: postges_db
+        - name: PGDATA
+          valueFrom:
+            configMapKeyRef:
+              name: psqldb-configmap
+              key: pgdata
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: psql-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: psql-secret
+              key: password
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+        # volumeMounts:
+        # - name: data
+        #   mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: psql-secret
+        secret:
+          secretName: psql-secret
+      # - name: data
+      #   persistentVolumeClaim:
+      #     claimName: pvc-psqldb
+      - name: config
+        configMap:
+          name: psqldb-configmap
