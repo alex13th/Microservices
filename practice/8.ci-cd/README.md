@@ -38,8 +38,8 @@ kubectl create rolebinding deploy --serviceaccount prod:deploy --clusterrole edi
 * Получаем токены для деплоя в нэймспэйсы
 
 ```bash
-export NAMESPACE=stage; kubectl get secret $(kubectl get sa deploy --namespace $NAMESPACE -o jsonpath='{.secrets[0].name}') --namespace $NAMESPACE -o jsonpath='{.data.token}
-export NAMESPACE=prod; kubectl get secret $(kubectl get sa deploy --namespace $NAMESPACE -o jsonpath='{.secrets[0].name}') --namespace $NAMESPACE -o jsonpath='{.data.token}
+export NAMESPACE=stage; kubectl get secret $(kubectl get sa deploy --namespace $NAMESPACE -o jsonpath='{.secrets[0].name}') --namespace $NAMESPACE -o jsonpath='{.data.token}'
+export NAMESPACE=prod; kubectl get secret $(kubectl get sa deploy --namespace $NAMESPACE -o jsonpath='{.secrets[0].name}') --namespace $NAMESPACE -o jsonpath='{.data.token}'
 ```
 
 Из этих токенов нужно создать переменные в проекте в Gitlab с именами
@@ -48,8 +48,8 @@ K8S_STAGE_CI_TOKEN и K8S_PROD_CI_TOKEN соответственно.
 * Создаем секреты для авторизации Kubernetes в Gitlab registry
 
 ```bash
-kubectl create secret docker-registry gitlab-registry --docker-server=registry.gitlab.com --docker-username=<USERNAME> --docker-password=<PASSWORD> --docker-email=admin@admin.admin --namespace stage
-kubectl create secret docker-registry gitlab-registry --docker-server=registry.gitlab.com --docker-username=<USERNAME> --docker-password=<PASSWORD> --docker-email=admin@admin.admin --namespace prod
+kubectl create secret docker-registry gitlab-registry --docker-server=registry.gitlab.com --docker-username=kube --docker-password=nDyJ6EBxvmeu87F_Ttsd --docker-email=admin@admin.admin --namespace stage
+kubectl create secret docker-registry gitlab-registry --docker-server=registry.gitlab.com --docker-username=kube --docker-password=nDyJ6EBxvmeu87F_Ttsd --docker-email=admin@admin.admin --namespace prod
 ```
 
 * Патчим дефолтный сервис аккаунт для автоматического использование pull secretа
@@ -87,3 +87,5 @@ kubectl apply --namespace stage -f app/kube
 kubectl apply --namespace prod -f app/kube
 ```
 
+registry.gitlab.com/alex13th/gb-microservices:master.249027593
+registry.gitlab.com/alex13th/gb-microservices:master.249027593
